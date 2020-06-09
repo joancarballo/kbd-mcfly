@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const Note = require("../models/Note");
+const User = require("../models/User");
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -7,13 +9,27 @@ router.get("/", (req, res, next) => {
 });
 
 /* GET All Notes */
-/* Según diseño. No necesaria si muestro todas las notas en la home*/
-router.get("/notes", (req, res, next) => {
-  res.render("index");
+router.get("/notes", async (req, res, next) => {
+  try {
+    const notas = await Note.find();
+    return res.json(notas);
+  } catch (error) {
+    return res.status(404).json({ status: "Notes Not Found" });
+  }
+});
+
+/* GET One note */
+router.get("/notes/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const nota = await Note.findById(id);
+    return res.json(nota);
+  } catch (error) {
+    return res.status(404).json({ status: "Note ID Not Found" });
+  }
 });
 
 /* GET Create note */
-/* Según diseño. No necesaria si pongo el formulario de create en la home */
 router.get("/notes/create", (req, res, next) => {
   res.render("index");
 });
@@ -34,8 +50,25 @@ router.get("/fav/:id", (req, res, next) => {
 });
 
 /* PUT Add Fav */
-router.put("/fav/:id", (req, res, next) => {
-  res.render("index");
+router.put("/fav/:id", async (req, res, next) => {
+  try {
+    const noteId = req.params.id;
+    console.log(noteId);
+    const userId = req.headers.user;
+    console.log(userId);
+    const userFav = await User.findOneAndUpdate(
+      { _id: userId },
+      { $addToSet: { notesFavorites: noteId } },
+      {
+        new: true,
+      }
+    ).populate("notesFavorites");
+    return res
+      .status(200)
+      .json({ status: "Added Note to User's Favorites", userFav });
+  } catch (error) {
+    return res.status(404).json({ status: "Note ID Not Found" });
+  }
 });
 
 /* PUT Delete Fav */
@@ -44,7 +77,6 @@ router.put("/fav/del/:id", (req, res, next) => {
 });
 
 /* GET Login */
-/* Según diseño. No necesaria si muestro el login en la home*/
 router.get("/login", (req, res, next) => {
   res.render("index");
 });
