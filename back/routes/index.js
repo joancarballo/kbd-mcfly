@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const Note = require("../models/Note");
 const User = require("../models/User");
 
@@ -83,7 +84,20 @@ router.get("/login", (req, res, next) => {
 
 /* POST Login */
 router.post("/login", (req, res, next) => {
-  res.render("index");
+  passport.authenticate("local", (err, user, failureDetails) => {
+    if (err) {
+      return res.json({ status: 500, message: "Autentication Error" });
+    }
+    if (!user) {
+      return res.json({ status: 401, message: failureDetails.message });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({ message: "Session Error" });
+      }
+      return res.redirect("/notes");
+    });
+  })(req, res, next);
 });
 
 /* POST Logout */
