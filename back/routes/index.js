@@ -12,6 +12,8 @@ router.get("/", (req, res, next) => {
 /* GET All Notes */
 router.get("/notes", async (req, res, next) => {
   try {
+    console.log(">> Notes");
+    console.log(req.user);
     const notas = await Note.find();
     return res.json(notas);
   } catch (error) {
@@ -36,8 +38,26 @@ router.get("/notes/create", (req, res, next) => {
 });
 
 /* POST Create note */
-router.post("/notes/create", (req, res, next) => {
-  res.render("index");
+router.post("/notes/create", async (req, res, next) => {
+  // Como ahora mismo no tengo front lo paso en el Header HTML
+  const nota = req.headers.text;
+  console.log(nota);
+  const userId = req.user.id;
+  console.log(userId);
+  try {
+    const newNote = await Note.create({ text: nota });
+    const noteCreated = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { notesCreated: newNote._id } },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json({ status: "Note created" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ status: "Error creating note" });
+  }
 });
 
 /* GET All Favorites */
@@ -55,7 +75,7 @@ router.put("/fav/:id", async (req, res, next) => {
   try {
     const noteId = req.params.id;
     console.log(noteId);
-    const userId = req.headers.user;
+    const userId = req.user.id;
     console.log(userId);
     const userFav = await User.findOneAndUpdate(
       { _id: userId },
@@ -95,14 +115,24 @@ router.post("/login", (req, res, next) => {
       if (err) {
         return res.status(500).json({ message: "Session Error" });
       }
+      console.log(">> Login In");
+      console.log(req.user);
       return res.redirect("/notes");
     });
   })(req, res, next);
 });
 
 /* POST Logout */
-router.post("/logout", (req, res, next) => {
-  res.render("index");
+router.get("/logout", (req, res, next) => {
+  if (req.user) {
+    console.log(">> Logout");
+    req.logout();
+    return res.status(200).redirect("/");
+  } else {
+    return res
+      .status(401)
+      .json({ status: "You have to be logged in to logout" });
+  }
 });
 
 module.exports = router;
