@@ -32,20 +32,15 @@ router.get("/notes/:id", async (req, res, next) => {
   }
 });
 
-/* GET Create note */
-router.get("/notes/create", (req, res, next) => {
-  res.render("index");
-});
-
 /* POST Create note */
 router.post("/notes/create", async (req, res, next) => {
   // Como ahora mismo no tengo front lo paso en el Header HTML
-  const nota = req.headers.text;
-  console.log(nota);
+  const { text } = req.body;
+  console.log(text);
   const userId = req.user.id;
   console.log(userId);
   try {
-    const newNote = await Note.create({ text: nota });
+    const newNote = await Note.create({ text });
     const noteCreated = await User.findByIdAndUpdate(
       userId,
       { $addToSet: { notesCreated: newNote._id } },
@@ -53,21 +48,36 @@ router.post("/notes/create", async (req, res, next) => {
         new: true,
       }
     );
-    return res.status(200).json({ status: "Note created" });
+    return res.status(200).json({ status: "Note created:", newNote });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ status: "Error creating note" });
   }
 });
 
-/* GET All Favorites */
-router.get("/fav", (req, res, next) => {
-  res.render("index");
+/* PUT Delete Fav */
+router.put("/fav/del/:id", async (req, res, next) => {
+  const userId = req.user.id;
+  const noteId = req.params.id;
+  const delNote = await User.findOneAndUpdate(
+    { _id: userId },
+    { $pull: { notesFavorites: noteId } },
+    {
+      new: true,
+    }
+  );
+  return res.status(200).json({ status: "Fav Deleted" });
 });
 
 /* GET One Favorites */
-router.get("/fav/:id", (req, res, next) => {
-  res.render("index");
+router.get("/fav/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const nota = await Note.findById(id);
+    return res.json(nota);
+  } catch (error) {
+    return res.status(404).json({ status: "Note ID Not Found" });
+  }
 });
 
 /* PUT Add Fav */
@@ -92,14 +102,17 @@ router.put("/fav/:id", async (req, res, next) => {
   }
 });
 
-/* PUT Delete Fav */
-router.put("/fav/del/:id", (req, res, next) => {
-  res.render("index");
-});
-
-/* GET Login */
-router.get("/login", (req, res, next) => {
-  res.render("index");
+/* GET All Favorites */
+router.get("/fav", async (req, res, next) => {
+  try {
+    console.log(">> FAVS");
+    console.log(req.user);
+    const userId = req.user.id;
+    const userFav = await User.findById(userId).populate("notesFavorites");
+    return res.json(userFav.notesFavorites);
+  } catch (error) {
+    return res.status(404).json({ status: "Notes Not Found" });
+  }
 });
 
 /* POST Login */
@@ -117,7 +130,7 @@ router.post("/login", (req, res, next) => {
       }
       console.log(">> Login In");
       console.log(req.user);
-      return res.redirect("/notes");
+      return res.json({ status: "Logged in ", user });
     });
   })(req, res, next);
 });
