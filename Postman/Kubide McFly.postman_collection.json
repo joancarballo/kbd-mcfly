@@ -25,69 +25,6 @@
 			"response": []
 		},
 		{
-			"name": "Notes",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/notes",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"notes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Find One Note",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/notes/5ee105933bc7c118ce6c6f1c",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"notes",
-						"5ee105933bc7c118ce6c6f1c"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Fav One Note",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "file",
-					"file": {}
-				},
-				"url": {
-					"raw": "http://localhost:3000/fav/5ee105e82e133318e238950b",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"fav",
-						"5ee105e82e133318e238950b"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Login",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
@@ -145,15 +82,27 @@
 		},
 		{
 			"name": "Create Note",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true
+				}
+			},
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "text",
-						"value": "\"Nueva nota 4\"",
-						"type": "text"
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "text",
+							"value": "Nueva nota desde el body 5",
+							"type": "text"
+						}
+					],
+					"options": {
+						"urlencoded": {}
 					}
-				],
+				},
 				"url": {
 					"raw": "http://localhost:3000/notes/create",
 					"protocol": "http",
@@ -164,6 +113,112 @@
 					"path": [
 						"notes",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Notes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/notes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find One Note",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/notes/5ee105933bc7c118ce6c6f1c",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"notes",
+						"5ee105933bc7c118ce6c6f1c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fav One Note",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {}
+				},
+				"url": {
+					"raw": "http://localhost:3000/fav/5edfb01520ec8222028529ec",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fav",
+						"5edfb01520ec8222028529ec"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fav View All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/fav",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fav"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fav Delete",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/fav/del/5edfb01520ec8222028529ec",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fav",
+						"del",
+						"5edfb01520ec8222028529ec"
 					]
 				}
 			},
@@ -194,7 +249,7 @@
 	],
 	"variable": [
 		{
-			"id": "1ded58e9-df69-4395-9f34-6dc3ca336ed9",
+			"id": "37163aef-84d5-4027-b9f4-ff313fe0ff37",
 			"key": "{{URL_BASE}}",
 			"value": "https://localhost:3000",
 			"type": "string"
